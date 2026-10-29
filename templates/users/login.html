@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load i18n ui %}
+
+{% block title %}{% translate "Tizimga kirish" %} — YordamGo{% endblock %}
+
+{% block content %}
+<div class="auth-layout">
+    <section class="auth-card" aria-labelledby="login-title">
+        <h1 id="login-title">{% translate "Tizimga kirish" %}</h1>
+        <p class="auth-sub">
+            {% translate "Hisobingiz yo'qmi?" %}
+            <a href="{% url 'users:register' %}{% if next %}?next={{ next|urlencode }}{% endif %}">{% translate "Ro'yxatdan o'ting" %}</a>
+        </p>
+
+        {% if form.non_field_errors %}
+            <div class="alert alert--danger mb-4" role="alert">
+                {% icon "alert" %}<div>{% for error in form.non_field_errors %}{{ error }}{% endfor %}</div>
+            </div>
+        {% endif %}
+
+        <form method="post" novalidate class="form-stack">
+            {% csrf_token %}
+            {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+            <div class="form-group">
+                <label for="{{ form.phone_number.id_for_label }}">{{ form.phone_number.label }}</label>
+                <div class="input-group">
+                    <span class="input-group__prefix" aria-hidden="true">+998</span>
+                    {{ form.phone_number }}
+                </div>
+                {% if form.phone_number.errors %}<ul class="errorlist">{% for e in form.phone_number.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+                <div class="password-field">
+                    {{ form.password }}
+                    <button type="button" class="icon-btn password-field__toggle" data-password-toggle aria-pressed="false" aria-label="{% translate "Parolni ko'rsatish" %}">
+                        {% icon "eye" css_class="icon-show" %}{% icon "eye-off" css_class="icon-hide" %}
+                    </button>
+                </div>
+                {% if form.password.errors %}<ul class="errorlist">{% for e in form.password.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-block">{% icon "log-in" %}{% translate "Kirish" %}</button>
+        </form>
+    </section>
+
+    {% include "users/_auth_aside.html" %}
+</div>
+{% endblock %}

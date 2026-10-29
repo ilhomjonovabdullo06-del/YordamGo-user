@@ -1,0 +1,12 @@
+{% load i18n static ui %}
+<aside class="auth-aside" aria-label="{% translate "YordamGo haqida" %}">
+    <img src="{% static 'icons/logo.svg' %}" alt="" width="48" height="48" class="auth-aside__logo">
+    <h2>{% translate "Kunlik ish va ishchi — xaritada" %}</h2>
+    <ul class="check-list">
+        <li>{% icon "check-circle" %}<span>{% translate "Rad etilsa ishonch to'lovi to'liq qaytadi" %}</span></li>
+        <li>{% icon "check-circle" %}<span>{% translate "Aniq manzil ishonch to'lovidan keyin ochiladi" %}</span></li>
+        <li>{% icon "check-circle" %}<span>{% translate "Maxsus ishlarda tasdiqlangan ustalar" %}</span></li>
+        <li>{% icon "check-circle" %}<span>{% translate "E'lon bekor qilinsa, komissiya qaytadi" %}</span></li>
+    </ul>
+    <a href="{% url 'home' %}#qanday-ishlaydi" class="btn-link">{% translate "Qanday ishlaydi" %} {% icon "arrow-right" 18 %}</a>
+</aside>

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load i18n ui %}
+
+{% block title %}{% translate "Ro'yxatdan o'tish" %} — YordamGo{% endblock %}
+
+{% block content %}
+<div class="auth-layout">
+    <section class="auth-card" aria-labelledby="register-title">
+        <h1 id="register-title">{% translate "Ro'yxatdan o'tish" %}</h1>
+        <p class="auth-sub">
+            {% translate "Hisobingiz bormi?" %}
+            <a href="{% url 'users:login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">{% translate "Tizimga kiring" %}</a>
+        </p>
+
+        {% if form.non_field_errors %}
+            <div class="alert alert--danger mb-4" role="alert">
+                {% icon "alert" %}<div>{% for error in form.non_field_errors %}{{ error }}{% endfor %}</div>
+            </div>
+        {% endif %}
+
+        <form method="post" novalidate class="form-stack">
+            {% csrf_token %}
+            {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+            <fieldset class="role-picker">
+                <legend>{{ form.role.label }}</legend>
+                <div class="role-picker__options">
+                    {% for choice in form.role %}
+                        <label class="role-card">
+                            {{ choice.tag }}
+                            <span class="role-card__icon">{% if choice.data.value == "employer" %}{% icon "briefcase" 22 %}{% else %}{% icon "user" 22 %}{% endif %}</span>
+                            <span class="role-card__title">{{ choice.choice_label }}</span>
+                            <span class="role-card__desc">{% if choice.data.value == "employer" %}{% translate "Ishchi qidiraman, e'lon beraman" %}{% else %}{% translate "Kunlik ish qidiraman" %}{% endif %}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+                {% if form.role.errors %}<ul class="errorlist">{% for e in form.role.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+            </fieldset>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}</label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}<ul class="errorlist">{% for e in form.first_name.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}</label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}<ul class="errorlist">{% for e in form.last_name.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.phone_number.id_for_label }}">{{ form.phone_number.label }}</label>
+                <div class="input-group">
+                    <span class="input-group__prefix" aria-hidden="true">+998</span>
+                    {{ form.phone_number }}
+                </div>
+                <span class="help-text">{% translate "Raqamingiz faqat siz bilan ish bo'yicha bog'langan tomonga ko'rinadi: ariza bergan ishchi — ish beruvchiga, qabul qilingan ishchiga — ish beruvchi raqami." %}</span>
+                {% if form.phone_number.errors %}<ul class="errorlist">{% for e in form.phone_number.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password1.id_for_label }}">{{ form.password1.label }}</label>
+                <div class="password-field">
+                    {{ form.password1 }}
+                    <button type="button" class="icon-btn password-field__toggle" data-password-toggle aria-pressed="false" aria-label="{% translate "Parolni ko'rsatish" %}">
+                        {% icon "eye" css_class="icon-show" %}{% icon "eye-off" css_class="icon-hide" %}
+                    </button>
+                </div>
+                <span class="help-text">{{ form.password1.help_text }}</span>
+                {% if form.password1.errors %}<ul class="errorlist">{% for e in form.password1.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label>
+                <div class="password-field">
+                    {{ form.password2 }}
+                    <button type="button" class="icon-btn password-field__toggle" data-password-toggle aria-pressed="false" aria-label="{% translate "Parolni ko'rsatish" %}">
+                        {% icon "eye" css_class="icon-show" %}{% icon "eye-off" css_class="icon-hide" %}
+                    </button>
+                </div>
+                {% if form.password2.errors %}<ul class="errorlist">{% for e in form.password2.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-block">{% icon "user-plus" %}{% translate "Hisob yaratish" %}</button>
+        </form>
+    </section>
+
+    {% include "users/_auth_aside.html" %}
+</div>
+{% endblock %}

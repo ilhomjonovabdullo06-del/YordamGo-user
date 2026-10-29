@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load i18n ui %}
+
+{% block title %}{% translate "Profilni tahrirlash" %} — YordamGo{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="card profile-card stack">
+    <a href="{% url 'users:profile' %}" class="back-link">{% icon "arrow-left" 18 %}{% translate "Bekor qilish" %}</a>
+    <h1 class="mt-0">{% translate "Profilni tahrirlash" %}</h1>
+
+    <form method="post" novalidate class="form-stack">
+      {% csrf_token %}
+
+      <h2 class="section-title">{% translate "Shaxsiy ma'lumotlar" %}</h2>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label for="id_first_name">{{ user_form.first_name.label }}</label>
+          {{ user_form.first_name }}
+          {% if user_form.first_name.errors %}<ul class="errorlist">{% for e in user_form.first_name.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+        <div class="form-group">
+          <label for="id_last_name">{{ user_form.last_name.label }}</label>
+          {{ user_form.last_name }}
+          {% if user_form.last_name.errors %}<ul class="errorlist">{% for e in user_form.last_name.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+      </div>
+
+      <h2 class="section-title">{% translate "Profil ma'lumotlari" %}</h2>
+      {% for field in profile_form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<span class="help-text">{{ field.help_text }}</span>{% endif %}
+          {% if field.errors %}<ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+      {% endfor %}
+
+      <button type="submit" class="btn btn-primary btn-lg btn-block">{% icon "check" %}{% translate "Saqlash" %}</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

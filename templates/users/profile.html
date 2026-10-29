@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load i18n ui %}
+
+{% block title %}Mening profilim — YordamGo{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="card profile-card">
+    <div class="profile-head">
+      <div class="profile-avatar">{{ user.get_full_name|default:user.phone_number|make_list|first|upper }}</div>
+      <div class="profile-head__body">
+        <h1 class="profile-name">{{ user.get_full_name|default:user.phone_number }}</h1>
+        <div class="chips-row">
+          <span class="badge badge--info">{{ user.get_role_display }}</span>
+          {% if user.is_verified %}<span class="badge badge--success">{% icon "badge-check" 14 %}{% translate "Tasdiqlangan" %}</span>{% else %}<span class="badge badge--warning">{% translate "Tasdiqlanmagan" %}</span>{% endif %}
+        </div>
+      </div>
+      <a href="{% url 'users:profile-edit' %}" class="icon-btn" aria-label="{% translate "Tahrirlash" %}">{% icon "pencil" 20 %}</a>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat"><div class="stat__value">{% icon "star" 18 %} {{ profile.rating|floatformat:1 }}</div><div class="stat__label">{% translate "Reyting" %}</div></div>
+      {% if profile_type == "worker" %}
+        <div class="stat"><div class="stat__value">{{ profile.completed_jobs_count }}</div><div class="stat__label">{% translate "Bajarilgan ishlar" %}</div></div>
+      {% else %}
+        <div class="stat"><div class="stat__value">{{ profile.posted_jobs_count }}</div><div class="stat__label">{% translate "E'lon qilingan ishlar" %}</div></div>
+      {% endif %}
+    </div>
+
+    <form method="post" action="{% url 'users:switch-role' %}" class="role-switch">
+      {% csrf_token %}
+      <div class="role-switch__text">
+        <strong>{% if user.is_worker %}{% translate "Siz ishchi rejimidasiz" %}{% else %}{% translate "Siz ish beruvchi rejimidasiz" %}{% endif %}</strong>
+        <span class="muted">{% if user.is_worker %}{% translate "E'lon berish uchun ish beruvchi rejimiga o'ting." %}{% else %}{% translate "Ish qidirish uchun ishchi rejimiga o'ting." %}{% endif %}</span>
+      </div>
+      <button type="submit" class="btn btn-secondary btn-sm">{% icon "repeat" 18 %}{% if user.is_worker %}{% translate "Ish beruvchi bo'lish" %}{% else %}{% translate "Ishchi bo'lish" %}{% endif %}</button>
+    </form>
+
+    <h2 class="section-title">{% translate "Ma'lumotlar" %}</h2>
+    <div class="profile-row"><div class="profile-key">{% translate "Telefon raqam" %}</div><div class="profile-val">{{ user.phone_number }}</div></div>
+    <div class="profile-row"><div class="profile-key">{% translate "Ro'yxatdan o'tgan" %}</div><div class="profile-val">{{ user.created_at|date:"d.m.Y" }}</div></div>
+    {% if profile_type == "worker" %}
+      {% if profile.bio %}<div class="profile-row"><div class="profile-key">{% translate "O'zi haqida" %}</div><div class="profile-val">{{ profile.bio }}</div></div>{% endif %}
+      {% if profile.skills %}<div class="profile-row"><div class="profile-key">{% translate "Ko'nikmalar" %}</div><div class="profile-val">{{ profile.skills|join:", " }}</div></div>{% endif %}
+    {% elif profile.company_name %}
+      <div class="profile-row"><div class="profile-key">{% translate "Kompaniya" %}</div><div class="profile-val">{{ profile.company_name }}</div></div>
+    {% endif %}
+
+    <h2 class="section-title">{% translate "Bo'limlar" %}</h2>
+    <ul class="link-list">
+      {% if user.is_employer %}
+        <li><a href="{% url 'jobs:my_jobs' %}">{% icon "briefcase" %}{% translate "E'lonlarim" %}{% icon "chevron-right" 18 css_class="chevron" %}</a></li>
+        <li><a href="{% url 'jobs:job_create' %}">{% icon "plus" %}{% translate "E'lon berish" %}{% icon "chevron-right" 18 css_class="chevron" %}</a></li>
+      {% else %}
+        <li><a href="{% url 'applications:my_applications' %}">{% icon "clipboard" %}{% translate "Arizalarim" %}{% icon "chevron-right" 18 css_class="chevron" %}</a></li>
+        <li><a href="{% url 'specializations:choose_specialization' %}">{% icon "wrench" %}{% translate "Ixtisoslik (santexnik, elektrik, haydovchi)" %}{% icon "chevron-right" 18 css_class="chevron" %}</a></li>
+      {% endif %}
+      <li><a href="{% url 'payments:wallet_detail' %}">{% icon "wallet" %}{% translate "Hamyon" %}{% icon "chevron-right" 18 css_class="chevron" %}</a></li>
+      <li><a href="{% url 'chat:my_conversations' %}">{% icon "message" %}{% translate "Suhbatlar" %}{% icon "chevron-right" 18 css_class="chevron" %}</a></li>
+      <li><a href="{% url 'notifications:notification_list' %}">{% icon "bell" %}{% translate "Bildirishnomalar" %}{% icon "chevron-right" 18 css_class="chevron" %}</a></li>
+      <li><a href="{% url 'users:change-phone' %}">{% icon "phone" %}{% translate "Telefon raqamni o'zgartirish" %}{% icon "chevron-right" 18 css_class="chevron" %}</a></li>
+      <li><a href="{% url 'users:change-password' %}">{% icon "lock" %}{% translate "Parolni o'zgartirish" %}{% icon "chevron-right" 18 css_class="chevron" %}</a></li>
+      <li><a href="{% url 'verification:submit_verification' %}">{% icon "shield" %}{% translate "Hujjat tasdiqlash" %}{% icon "chevron-right" 18 css_class="chevron" %}</a></li>
+      {% if user.is_staff %}
+        <li><a href="{% url 'dashboard_admin:dashboard' %}">{% icon "layout" %}{% translate "Boshqaruv paneli" %}{% icon "chevron-right" 18 css_class="chevron" %}</a></li>
+      {% endif %}
+      <li>
+        <form action="{% url 'users:logout' %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="link-list__logout">{% icon "log-out" %}{% translate "Chiqish" %}</button>
+        </form>
+      </li>
+    </ul>
+  </div>
+</div>
+{% endblock %}
